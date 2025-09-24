@@ -235,9 +235,10 @@ pip install -r requirements.txt  # Install dependencies
 pip install -e .             # Install in development mode
 
 # Release management
-# 1. Update version in pyproject.toml
-# 2. git add pyproject.toml && git commit -m "🔖 Bump to vX.X.X"
-# 3. git push origin main     # Triggers automated PyPI publishing
+# 1. Create release branch: git checkout -b release/vX.X.X
+# 2. Update version in pyproject.toml  
+# 3. Create PR, merge after tests pass
+# 4. Create release: git tag -a vX.X.X -m "Release vX.X.X" && git push origin vX.X.X
 
 # Git workflow (via MCP)
 mcp__git__git_status         # Check repository status
@@ -277,36 +278,47 @@ The goal is to create a seamless experience where Claude can manage infrastructu
 
 ## Release Management & PyPI Publishing
 
-### 🚀 **Automated Release Pipeline**
+### 🚀 **Tag-Based Release Pipeline**
 
-CargoShipper uses GitHub Actions for fully automated PyPI publishing. The pipeline is triggered on every push to the `main` branch.
+CargoShipper uses GitHub Actions with a **tag-based release strategy**:
+- **Pull Requests**: Run tests to ensure code quality
+- **Main branch**: Run tests only (no publishing)  
+- **Tagged releases**: Automatically publish to PyPI
 
 #### **How it Works**:
-1. **Tests Run**: Python 3.11 & 3.12 compatibility testing
-2. **Version Check**: Compares `pyproject.toml` version against PyPI
-3. **Smart Publishing**: Only publishes if version is new
+1. **PRs & Main**: Python 3.11 & 3.12 compatibility testing
+2. **Tagged Releases**: Testing + version validation + PyPI publishing
+3. **Version Validation**: Ensures tag matches `pyproject.toml`
 4. **Global Distribution**: Immediately available via `uvx cargoshipper-mcp`
 
 #### **Release Process**:
 
-**Step 1: Update Version**
-```toml
-# Edit pyproject.toml
-[project]
-version = "1.0.1"  # <- Change this number
+**Step 1: Update Version & Create PR**
+```bash
+git checkout -b release/v1.0.1
+# Edit pyproject.toml version = "1.0.1"
+git add pyproject.toml
+git commit -m "🔖 Prepare release v1.0.1"
+git push origin release/v1.0.1
+# Create PR, ensure tests pass, merge
 ```
 
-**Step 2: Commit & Push**
+**Step 2: Create Tagged Release**
 ```bash
-git add pyproject.toml
-git commit -m "🔖 Bump to v1.0.1 - Add awesome feature"
-git push origin main
+git checkout main && git pull
+git tag -a v1.0.1 -m "Release v1.0.1"
+git push origin v1.0.1
 ```
+
+**Or use GitHub UI:**
+- Go to Releases → Create new release
+- Tag: `v1.0.1`, Title: `Release v1.0.1`
+- Add release notes → Publish
 
 **Step 3: Automatic Publication** ✨
 - GitHub Actions runs tests
-- Builds package
-- Publishes to PyPI (if new version)
+- Validates tag matches `pyproject.toml` version
+- Publishes to PyPI automatically
 - Available globally: `uvx cargoshipper-mcp`
 
 #### **Version Numbering**:
@@ -342,8 +354,11 @@ For critical fixes:
 When working on CargoShipper:
 
 1. **Development**: Make changes, use local testing via `uvx --from . cargoshipper-mcp`
-2. **Testing**: Run `python test_server.py` locally
-3. **Version**: Update version in `pyproject.toml` for releases
-4. **Commit**: Use semantic commit messages
-5. **Push**: GitHub Actions handles testing and publication
-6. **Verify**: Check PyPI and test global installation
+2. **Pull Requests**: Create PRs for all changes, ensure tests pass
+3. **Releases**: 
+   - Create release branch (`release/vX.X.X`)
+   - Update version in `pyproject.toml`
+   - Create PR, merge after tests pass
+   - Create tagged release (`git tag vX.X.X`)
+4. **Automation**: GitHub Actions handles testing (PRs/main) and publication (tags)
+5. **Verify**: Check PyPI and test global installation after release

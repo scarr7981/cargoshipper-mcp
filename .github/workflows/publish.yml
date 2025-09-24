@@ -1,10 +1,12 @@
-name: Test and Publish to PyPI
+name: Test and Release
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  release:
+    types: [ published ]
 
 jobs:
   test:
@@ -40,7 +42,7 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'release'
     permissions:
       contents: read
       id-token: write
@@ -61,11 +63,16 @@ jobs:
     - name: Build package
       run: python -m build
     
-    - name: Check if version already exists on PyPI
-      id: check-version
+    - name: Get version from tag
+      id: get-version
       run: |
-        # Get current version from pyproject.toml  
-        CURRENT_VERSION=$(python -c "
+        # Extract version from release tag (e.g., v1.2.3 -> 1.2.3)
+        TAG_VERSION=${GITHUB_REF#refs/tags/v}
+        echo "tag_version=$TAG_VERSION" >> $GITHUB_OUTPUT
+        echo "🏷️  Release tag version: $TAG_VERSION"
+        
+        # Get version from pyproject.toml
+        PYPROJECT_VERSION=$(python -c "
         import sys
         if sys.version_info >= (3, 11):
             import tomllib
@@ -75,33 +82,25 @@ jobs:
             import configparser
             config = configparser.ConfigParser()
             config.read('pyproject.toml')
-            # This is a fallback, may not work perfectly
             data = {'project': {'version': '1.0.0'}}
         print(data['project']['version'])
         ")
-        echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+        echo "pyproject_version=$PYPROJECT_VERSION" >> $GITHUB_OUTPUT
+        echo "📝 pyproject.toml version: $PYPROJECT_VERSION"
         
-        # Check if this version exists on PyPI
-        pip install --dry-run cargoshipper-mcp==$CURRENT_VERSION 2>/dev/null && VERSION_EXISTS=true || VERSION_EXISTS=false
-        echo "version_exists=$VERSION_EXISTS" >> $GITHUB_OUTPUT
-        
-        if [ "$VERSION_EXISTS" = "true" ]; then
-          echo "⚠️  Version $CURRENT_VERSION already exists on PyPI"
+        # Verify versions match
+        if [ "$TAG_VERSION" != "$PYPROJECT_VERSION" ]; then
+          echo "❌ Version mismatch! Tag: $TAG_VERSION, pyproject.toml: $PYPROJECT_VERSION"
+          exit 1
         else
-          echo "✅ Version $CURRENT_VERSION is new, will publish"
+          echo "✅ Versions match: $TAG_VERSION"
         fi
     
     - name: Publish to PyPI
-      if: steps.check-version.outputs.version_exists == 'false'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
         twine upload dist/*
-        echo "🎉 Published version ${{ steps.check-version.outputs.current_version }} to PyPI!"
-    
-    - name: Skip publishing (version exists)
-      if: steps.check-version.outputs.version_exists == 'true'
-      run: |
-        echo "⏭️  Skipping PyPI publish - version ${{ steps.check-version.outputs.current_version }} already exists"
-        echo "💡 To publish a new version, update the version in pyproject.toml"
+        echo "🎉 Published version ${{ steps.get-version.outputs.tag_version }} to PyPI!"
+        echo "🌍 Available globally: uvx cargoshipper-mcp"

@@ -2,17 +2,19 @@
 
 This document explains how to create new releases of CargoShipper MCP.
 
-## Automated PyPI Publishing
+## Release Strategy
 
-The project uses GitHub Actions to automatically publish to PyPI when changes are pushed to the `main` branch.
+The project uses a **tag-based release strategy**:
+- **Pull Requests**: Run tests to ensure code quality
+- **Main branch pushes**: Run tests only (no publishing)
+- **Tagged releases**: Publish to PyPI automatically
 
 ### How it works:
 
-1. **Every push to `main`** triggers the CI/CD pipeline
-2. **Tests run** on Python 3.11 and 3.12
-3. **Version check** - compares current version in `pyproject.toml` with PyPI
-4. **Automatic publish** - if version is new, publishes to PyPI
-5. **Skip if exists** - if version already exists, skips publishing
+1. **PRs and main pushes** trigger testing on Python 3.11 and 3.12
+2. **Tagged releases** trigger testing + PyPI publishing
+3. **Version validation** - ensures tag matches `pyproject.toml` version
+4. **Automatic publish** - publishes to PyPI on successful release
 
 ## Creating a New Release
 
@@ -25,30 +27,54 @@ name = "cargoshipper-mcp"
 version = "1.0.1"  # <- Update this
 ```
 
-### 2. Update Changelog (Optional)
-
-Add release notes to README or create CHANGELOG.md
-
-### 3. Commit and Push
+### 2. Create Pull Request
 
 ```bash
+git checkout -b release/v1.0.1
 git add pyproject.toml
-git commit -m "🔖 Bump version to 1.0.1
+git commit -m "🔖 Prepare release v1.0.1
 
 - Add new feature X
 - Fix bug Y  
 - Improve Z"
-git push origin main
+git push origin release/v1.0.1
 ```
 
-### 4. Automatic Publishing
+Create PR and ensure tests pass.
+
+### 3. Merge to Main
+
+Once PR is approved and tests pass, merge to main.
+
+### 4. Create Tagged Release
+
+```bash
+git checkout main
+git pull origin main
+git tag -a v1.0.1 -m "Release v1.0.1
+
+- Add new feature X
+- Fix bug Y
+- Improve Z"
+git push origin v1.0.1
+```
+
+**Or use GitHub UI:**
+1. Go to https://github.com/scarr7981/cargoshipper-mcp/releases
+2. Click "Create a new release"
+3. Tag: `v1.0.1`
+4. Title: `Release v1.0.1`
+5. Description: Release notes
+6. Click "Publish release"
+
+### 5. Automatic Publishing
 
 GitHub Actions will:
-- ✅ Run tests
-- ✅ Build package  
-- ✅ Check if version 1.0.1 exists on PyPI
-- 🚀 Publish to PyPI (if new version)
-- 🎉 Available via `uvx cargoshipper-mcp`
+- ✅ Run tests on Python 3.11 and 3.12
+- ✅ Build package
+- ✅ Verify tag version matches `pyproject.toml`
+- 🚀 Publish to PyPI
+- 🎉 Available globally via `uvx cargoshipper-mcp`
 
 ## Version Numbering
 
