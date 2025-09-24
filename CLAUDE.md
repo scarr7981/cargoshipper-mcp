@@ -190,29 +190,54 @@ mcp__sequential-thinking__sequentialthinking(
 
 ```
 cargoshipper-mcp/
-├── .mcp.json                 # MCP server configuration
-├── CLAUDE.md                 # This documentation
-├── README.md                 # Project overview
-├── package.json              # Node.js dependencies
-├── test-mcp.js              # MCP testing utilities
-├── docs/                    # Comprehensive documentation
-│   ├── mcp-architecture.md  # MCP protocol details
+├── .github/workflows/       # GitHub Actions CI/CD
+│   └── publish.yml          # Automated PyPI publishing
+├── .gitignore               # Git ignore patterns
+├── .mcp.dev.json           # Development MCP config
+├── .mcp.uvx.json           # uvx MCP config example
+├── CLAUDE.md               # This documentation
+├── LICENSE                 # MIT License
+├── README.md               # Project overview
+├── RELEASING.md            # Release management guide
+├── pyproject.toml          # Python project configuration
+├── requirements.txt        # Python dependencies
+├── test_server.py          # Test suite
+├── cargoshipper_mcp/       # Main package
+│   ├── __init__.py
+│   ├── server.py           # MCP server entry point
+│   ├── config/             # Configuration management
+│   ├── tools/              # API operation tools
+│   │   ├── docker.py       # Docker operations
+│   │   ├── digitalocean.py # DigitalOcean operations
+│   │   └── cloudflare.py   # CloudFlare operations
+│   ├── resources/          # Read-only data access
+│   └── utils/              # Shared utilities
+├── docs/                   # Comprehensive documentation
+│   ├── mcp-architecture.md
 │   ├── docker-api-reference.md
 │   ├── digitalocean-api-reference.md
 │   ├── cloudflare-api-reference.md
 │   ├── implementation-guide.md
 │   └── tool-catalog.md
-└── src/                     # Server implementation (to be created)
+└── dist/                   # Built packages (gitignored)
 ```
 
 ## Development Commands
 
 ```bash
-# MCP server development
-node test-mcp.js            # Test MCP server functionality
-npm install                 # Install dependencies
-npm run dev                 # Development server
-npm run build               # Build for production
+# Local development and testing
+python test_server.py        # Run test suite
+uvx --from . cargoshipper-mcp # Test local installation
+python -m build             # Build package for distribution
+
+# Package management
+pip install -r requirements.txt  # Install dependencies
+pip install -e .             # Install in development mode
+
+# Release management
+# 1. Update version in pyproject.toml
+# 2. git add pyproject.toml && git commit -m "🔖 Bump to vX.X.X"
+# 3. git push origin main     # Triggers automated PyPI publishing
 
 # Git workflow (via MCP)
 mcp__git__git_status         # Check repository status
@@ -226,6 +251,10 @@ mcp__memory__search_nodes   # Find relevant information
 # Testing (via MCP)
 mcp__playwright__browser_navigate # Test web interfaces
 mcp__playwright__browser_snapshot # Capture current state
+
+# CI/CD monitoring
+gh run list                  # Check GitHub Actions status
+gh run view <run-id>         # View specific run details
 ```
 
 ## Security and Best Practices
@@ -238,10 +267,83 @@ mcp__playwright__browser_snapshot # Capture current state
 
 ## Integration Notes
 
-This CargoShipper MCP server will integrate with the existing MCP ecosystem by:
+This CargoShipper MCP server integrates with the existing MCP ecosystem by:
 - Leveraging Memory for persistent state management
 - Using Git for version control of configurations and code
 - Using Playwright for testing deployed infrastructure
 - Using Sequential-thinking for complex deployment decision-making
 
 The goal is to create a seamless experience where Claude can manage infrastructure across Docker, Digital Ocean, and CloudFlare with the same ease as working with local files.
+
+## Release Management & PyPI Publishing
+
+### 🚀 **Automated Release Pipeline**
+
+CargoShipper uses GitHub Actions for fully automated PyPI publishing. The pipeline is triggered on every push to the `main` branch.
+
+#### **How it Works**:
+1. **Tests Run**: Python 3.11 & 3.12 compatibility testing
+2. **Version Check**: Compares `pyproject.toml` version against PyPI
+3. **Smart Publishing**: Only publishes if version is new
+4. **Global Distribution**: Immediately available via `uvx cargoshipper-mcp`
+
+#### **Release Process**:
+
+**Step 1: Update Version**
+```toml
+# Edit pyproject.toml
+[project]
+version = "1.0.1"  # <- Change this number
+```
+
+**Step 2: Commit & Push**
+```bash
+git add pyproject.toml
+git commit -m "🔖 Bump to v1.0.1 - Add awesome feature"
+git push origin main
+```
+
+**Step 3: Automatic Publication** ✨
+- GitHub Actions runs tests
+- Builds package
+- Publishes to PyPI (if new version)
+- Available globally: `uvx cargoshipper-mcp`
+
+#### **Version Numbering**:
+Follow [Semantic Versioning](https://semver.org/):
+- **Major** (1.0.0 → 2.0.0): Breaking changes
+- **Minor** (1.0.0 → 1.1.0): New features, backwards compatible  
+- **Patch** (1.0.0 → 1.0.1): Bug fixes, backwards compatible
+
+#### **Emergency Releases**:
+For critical fixes:
+1. Update version in `pyproject.toml`
+2. Push directly to main
+3. GitHub Actions handles publication automatically
+
+#### **Configuration Files**:
+- **CI/CD**: `.github/workflows/publish.yml`
+- **Release Guide**: `RELEASING.md`
+- **PyPI Token**: GitHub secret `PYPI_API_TOKEN`
+
+#### **Monitoring**:
+- **Actions**: https://github.com/scarr7981/cargoshipper-mcp/actions
+- **PyPI**: https://pypi.org/project/cargoshipper-mcp/
+- **Status**: Check latest run status before releasing
+
+#### **Current Status**: ✅ **LIVE & AUTOMATED**
+- Published on PyPI: https://pypi.org/project/cargoshipper-mcp/
+- Global access: `uvx cargoshipper-mcp`
+- Automated pipeline: Active and tested
+- Next release: Just update version number and push!
+
+### 🔄 **Standard Operating Procedure**
+
+When working on CargoShipper:
+
+1. **Development**: Make changes, use local testing via `uvx --from . cargoshipper-mcp`
+2. **Testing**: Run `python test_server.py` locally
+3. **Version**: Update version in `pyproject.toml` for releases
+4. **Commit**: Use semantic commit messages
+5. **Push**: GitHub Actions handles testing and publication
+6. **Verify**: Check PyPI and test global installation
