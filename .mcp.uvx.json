@@ -1,0 +1,8 @@
+{
+	"mcpServers": {
+		"cargoshipper": {
+			"command": "uvx",
+			"args": ["--from", ".", "cargoshipper-mcp"]
+		}
+	}
+}
