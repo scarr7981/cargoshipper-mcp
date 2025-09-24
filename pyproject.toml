@@ -1,0 +1,70 @@
+[project]
+name = "cargoshipper-mcp"
+version = "1.0.0"
+description = "MCP server for Docker, DigitalOcean, and CloudFlare operations"
+authors = [{name = "CargoShipper Team"}]
+license = {text = "ISC"}
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["mcp", "docker", "digitalocean", "cloudflare", "infrastructure", "automation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+    "License :: OSI Approved :: ISC License (ISCL)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "mcp>=1.0.0",
+    "docker>=7.1.0",
+    "pydo>=0.4.0", 
+    "cloudflare>=2.19.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pre-commit>=3.5.0",
+]
+
+[project.scripts]
+cargoshipper-mcp = "cargoshipper_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/your-username/cargoshipper-mcp"
+Documentation = "https://github.com/your-username/cargoshipper-mcp/docs"
+Repository = "https://github.com/your-username/cargoshipper-mcp"
+Issues = "https://github.com/your-username/cargoshipper-mcp/issues"
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.ruff]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = []
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

@@ -1,0 +1,8 @@
+mcp>=1.0.0
+docker>=7.1.0
+pydo>=0.4.0
+cloudflare>=2.19.0
+pydantic>=2.5.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+httpx>=0.25.0

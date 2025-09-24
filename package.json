@@ -1,0 +1,16 @@
+{
+  "name": "cargoshipper-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Docker, Digital Ocean, and CloudFlare operations",
+  "main": "index.js",
+  "scripts": {
+    "start-memory": "npx -y @modelcontextprotocol/server-memory",
+    "start-playwright": "npx @playwright/mcp@latest",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["mcp", "docker", "digitalocean", "cloudflare"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
+}
