@@ -1,31 +1,12 @@
 {
 	"mcpServers": {
 		"cargoshipper": {
-			"command": "/mnt/c/Users/simon/dev/cargoshipper-mcp/.venv/bin/python",
+			"command": "python",
 			"args": ["-m", "cargoshipper_mcp.server"],
-			"cwd": "/mnt/c/Users/simon/dev/cargoshipper-mcp"
-		},
-		"playwright": {
-			"command": "npx",
-			"args": [
-				"@playwright/mcp@latest"
-			]
-		},
-		"memory": {
-			"command": "npx",
-			"args": ["-y", "@modelcontextprotocol/server-memory"],
-			"env": { "MEMORY_FILE_PATH": "./project-memory.json" }		  
-		},
-		"git": {
-			"command": "uvx",
-			"args": ["mcp-server-git"]
-		},
-		"sequential-thinking": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"@modelcontextprotocol/server-sequential-thinking"
-			]
+			"cwd": ".",
+			"env": {
+				"PYTHONPATH": "."
+			}
 		}
 	}
 }
