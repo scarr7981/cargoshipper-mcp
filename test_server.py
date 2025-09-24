@@ -34,14 +34,19 @@ from cargoshipper_mcp.utils.errors import CargoShipperError
 def test_configuration():
     """Test configuration loading"""
     print("🔧 Testing Configuration...")
-    print(f"  Server Name: {settings.mcp_server_name}")
-    print(f"  Version: {settings.mcp_server_version}")
-    print(f"  Transport: {settings.mcp_transport}")
-    print(f"  Log Level: {settings.mcp_log_level}")
-    print(f"  Docker Available: {settings.has_docker_config}")
-    print(f"  DigitalOcean Available: {settings.has_digitalocean_config}")
-    print(f"  CloudFlare Available: {settings.has_cloudflare_config}")
-    print("  ✅ Configuration loaded successfully\n")
+    try:
+        print(f"  Server Name: {settings.mcp_server_name}")
+        print(f"  Version: {settings.mcp_server_version}")
+        print(f"  Transport: {settings.mcp_transport}")
+        print(f"  Log Level: {settings.mcp_log_level}")
+        print(f"  Docker Available: {settings.has_docker_config}")
+        print(f"  DigitalOcean Available: {settings.has_digitalocean_config}")
+        print(f"  CloudFlare Available: {settings.has_cloudflare_config}")
+        print("  ✅ Configuration loaded successfully\n")
+        return True
+    except Exception as e:
+        print(f"  ❌ Configuration loading failed: {e}\n")
+        return False
 
 def test_docker_connection():
     """Test Docker connection"""
