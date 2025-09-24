@@ -2,29 +2,33 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://modelcontextprotocol.io/)
+[![PyPI](https://img.shields.io/pypi/v/cargoshipper-mcp)](https://pypi.org/project/cargoshipper-mcp/)
+[![uvx](https://img.shields.io/badge/uvx-compatible-orange.svg)](https://github.com/astral-sh/uvx)
 
 A comprehensive MCP (Model Context Protocol) server that provides Claude with direct access to Docker, DigitalOcean, and CloudFlare APIs for infrastructure management and automation.
 
 ## ✨ Easy Setup with uvx
 
-CargoShipper is designed to work seamlessly with `uvx` for easy installation and management, just like `mcp-server-git`.
+CargoShipper is available on PyPI and works seamlessly with `uvx` for easy installation and management, just like `mcp-server-git`.
 
-### Quick Install (Future - when published to PyPI)
+### Quick Install from PyPI
 
 ```bash
-# This will work once published to PyPI
-uvx install cargoshipper-mcp
+# Run directly (recommended)
+uvx cargoshipper-mcp
 
 # Configure in your .mcp.json
 {
-  "cargoshipper": {
-    "command": "uvx",
-    "args": ["cargoshipper-mcp"]
+  "mcpServers": {
+    "cargoshipper": {
+      "command": "uvx",
+      "args": ["cargoshipper-mcp"]
+    }
   }
 }
 ```
 
-### Development Setup (Current)
+### Development Setup
 
 For local development and testing:
 
@@ -179,22 +183,23 @@ cargoshipper-mcp/
 └── install.sh             # uvx installation script
 ```
 
-## 🔮 Future: PyPI Publication
+## 🌍 Published on PyPI
 
-Once published to PyPI, setup becomes as simple as:
+CargoShipper MCP is now available on PyPI! Access it at: https://pypi.org/project/cargoshipper-mcp/
+
+Setup is as simple as:
 
 ```bash
-# Install globally
-uvx install cargoshipper-mcp
-
-# Or run directly
+# Run directly (most common)
 uvx cargoshipper-mcp
 
 # Configure in .mcp.json
 {
-  "cargoshipper": {
-    "command": "uvx",
-    "args": ["cargoshipper-mcp"] 
+  "mcpServers": {
+    "cargoshipper": {
+      "command": "uvx",
+      "args": ["cargoshipper-mcp"] 
+    }
   }
 }
 ```
