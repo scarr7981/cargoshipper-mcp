@@ -245,14 +245,131 @@ mcp__git__git_status         # Check repository status
 mcp__git__git_add           # Stage changes
 mcp__git__git_commit        # Create commits
 
-# Git branch management workflow
-# When working on fixes or features:
-git stash push -m "WIP: Description of changes"  # Stash current work
-git checkout -b fix/branch-name main             # Create feature/fix branch
-git stash pop                                    # Apply stashed changes
-# ... work on changes ...
-git add . && git commit -m "Fix: description"    # Commit changes
-git push -u origin fix/branch-name               # Push branch and create PR
+## 🔄 **Issue-Driven Git Workflow**
+
+**Standard Operating Procedure for all development work:**
+
+### **Step 1: Preparation**
+```bash
+git checkout main && git pull origin main    # Sync with latest main branch
+```
+
+### **Step 2: Issue Management**
+```bash
+gh issue list                               # List existing issues
+gh issue create --title "Brief description" --body "Detailed description of the problem or feature request"
+# OR inspect existing issue:
+gh issue view <issue-number>                # Review specific issue details
+```
+
+### **Step 3: Branch Creation**
+```bash
+# Branch naming convention: description-<issueID>
+git checkout -b fix-docker-auth-123         # For issue #123 about Docker auth
+git checkout -b feature-aws-integration-45  # For issue #45 about AWS integration  
+git checkout -b docs-update-api-reference-67 # For issue #67 about documentation
+```
+
+### **Step 4: Development Work**
+```bash
+# If mid-work and need to stash:
+git stash push -m "WIP: Description of current changes"
+git stash pop                               # When ready to continue
+
+# Regular development cycle:
+# ... make changes ...
+git add <files>
+git commit -m "Descriptive commit message"
+# ... continue iterating ...
+```
+
+### **Step 5: Push to Branch**
+```bash
+git push -u origin description-<issueID>    # First push with upstream tracking
+git push                                    # Subsequent pushes
+```
+
+### **Step 6: Pull Request Creation**
+```bash
+gh pr create --title "Brief description (fixes #<issueID>)" --body "$(cat <<'EOF'
+## Summary
+Brief overview of changes addressing issue #<issueID>
+
+## Problems Addressed
+- Fixes #<issueID>: Detailed description of the problem solved
+- Reference any BREAK # identifiers from systematic testing
+
+## Solutions Implemented
+- Technical solution 1 with rationale
+- Technical solution 2 with rationale
+- Code organization and architecture decisions
+
+## Testing
+- ✅ All existing tests pass (X/X)
+- ✅ New test scenarios validated
+- ✅ Manual testing completed
+- ✅ No regressions confirmed
+
+## Impact
+- User impact: How this improves the user experience
+- Technical impact: Architecture or performance improvements
+- Maintenance impact: Code quality or documentation improvements
+
+## Checklist
+- [ ] Code follows project style guidelines
+- [ ] Tests added/updated as needed
+- [ ] Documentation updated
+- [ ] No breaking changes (or properly documented)
+
+Closes #<issueID>
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+EOF
+)"
+```
+
+### **Step 7: PR Review Cycle**
+```bash
+# Check PR status
+gh pr view <pr-number>                      # View PR details and reviews
+gh pr checks <pr-number>                    # Check CI/CD status
+
+# Address review feedback:
+# ... make requested changes ...
+git add <files>
+git commit -m "Address review feedback: specific changes made"
+git push                                    # Auto-updates PR
+
+# Continue until PR is approved
+```
+
+### **Step 8: Human Merge & Cleanup**
+**Human Action Required:**
+1. Human merges PR after approval
+2. Human reports back: "PR #X merged successfully"
+3. **Start new cycle from Step 1**
+
+```bash
+# After human confirms merge:
+git checkout main && git pull origin main   # Sync merged changes
+git branch -d description-<issueID>         # Clean up local branch
+git remote prune origin                     # Clean up remote references
+```
+
+### **Branch Naming Convention Examples**
+- `fix-docker-list-containers-123` - Fix for issue #123
+- `feature-kubernetes-support-45` - Feature request #45  
+- `docs-authentication-guide-67` - Documentation issue #67
+- `refactor-error-handling-89` - Code improvement #89
+- `test-docker-operations-101` - Testing improvement #101
+
+### **Issue Categories & Branch Prefixes**
+- `fix-*` - Bug fixes
+- `feature-*` - New features
+- `docs-*` - Documentation updates
+- `refactor-*` - Code improvements  
+- `test-*` - Testing improvements
+- `ci-*` - CI/CD pipeline changes
 
 # Memory management (via MCP)
 mcp__memory__create_entities # Document new components
