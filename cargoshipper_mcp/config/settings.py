@@ -81,6 +81,7 @@ class Settings(BaseSettings):
         """Pydantic configuration"""
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"  # Ignore extra environment variables
 
 
 # Global settings instance
