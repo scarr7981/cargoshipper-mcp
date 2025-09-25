@@ -275,6 +275,48 @@ gh run view <run-id>         # View specific run details
 - Use Playwright MCP for testing security configurations
 - Use Sequential-thinking MCP for security analysis and threat modeling
 
+### 🔐 **Docker Registry Authentication**
+
+CargoShipper supports multiple Docker registry authentication methods for improved `docker_pull_image` reliability:
+
+#### **Environment Variables (Recommended for Linux/Production)**:
+```bash
+export DOCKER_REGISTRY_USERNAME="your-username"
+export DOCKER_REGISTRY_PASSWORD="your-password"  
+export DOCKER_REGISTRY_SERVER="https://index.docker.io/v1/"  # Optional, defaults to Docker Hub
+export DOCKER_CONFIG_PATH="/custom/path/.docker/config.json"  # Optional custom config path
+```
+
+#### **Docker Config Integration**:
+- Automatically reads from `~/.docker/config.json`
+- Supports base64 encoded `auth` entries
+- Supports separate `username`/`password` entries
+- Works with credential helpers (basic support)
+
+#### **Usage Examples**:
+```python
+# Use authentication (default)
+docker_pull_image(image="nginx:latest")
+
+# Specify custom registry
+docker_pull_image(image="myregistry.com/nginx:latest", registry="https://myregistry.com")
+
+# Skip authentication if needed
+docker_pull_image(image="nginx:latest", use_auth=False)
+```
+
+#### **Authentication Priority**:
+1. **Environment Variables** (highest priority)
+2. **Docker Config File** (`~/.docker/config.json`)  
+3. **Credential Helpers** (basic support)
+4. **No Authentication** (fallback)
+
+#### **Error Handling**:
+- Provides specific guidance for authentication failures
+- Indicates whether auth was attempted/used
+- Suggests environment variable configuration
+- Reports auth availability status
+
 ## Integration Notes
 
 This CargoShipper MCP server integrates with the existing MCP ecosystem by:
