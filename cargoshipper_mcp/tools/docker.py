@@ -7,6 +7,8 @@ from docker.errors import DockerException, NotFound, APIError
 from ..utils.validation import validate_container_name, validate_image_name, validate_port
 from ..utils.formatters import format_success_response, format_error_response, format_container_info
 from ..utils.errors import CargoShipperError, ValidationError
+from ..utils.docker_auth import get_docker_auth_config
+from ..config.settings import settings
 
 
 def register_tools(mcp, get_client: Callable):
@@ -170,7 +172,9 @@ def register_tools(mcp, get_client: Callable):
             }, "start_container")
             
         except NotFound:
-            return format_error_response(f"Container {container_id} not found", "start_container")
+            error_msg = f"Container '{container_id}' not found"
+            error_msg += ". This may occur if the container was created with remove=true and has been auto-removed after stopping"
+            return format_error_response(error_msg, "start_container", {"container_not_found": True, "container_id": container_id})
         except DockerException as e:
             return format_error_response(f"Docker error: {e}", "start_container")
         except Exception as e:
@@ -280,30 +284,77 @@ def register_tools(mcp, get_client: Callable):
             return format_error_response(f"Unexpected error: {e}", "list_images")
     
     @mcp.tool()
-    def docker_pull_image(image: str) -> Dict[str, Any]:
+    def docker_pull_image(
+        image: str,
+        registry: Optional[str] = None,
+        use_auth: bool = True
+    ) -> Dict[str, Any]:
         """Pull a Docker image
         
         Args:
             image: Image name to pull (e.g., 'nginx:latest')
+            registry: Registry server URL (optional, defaults to Docker Hub)
+            use_auth: Whether to use authentication (default: True)
         """
         try:
             client = get_client()
             
             validate_image_name(image)
             
-            pulled_image = client.images.pull(image)
+            # Get authentication configuration if requested
+            auth_config = None
+            if use_auth:
+                auth_config = get_docker_auth_config(
+                    registry=registry,
+                    username=settings.docker_registry_username,
+                    password=settings.docker_registry_password,
+                    config_path=settings.docker_config_path
+                )
+            
+            # Pull image with or without authentication
+            if auth_config:
+                pulled_image = client.images.pull(image, auth_config=auth_config)
+                auth_used = True
+            else:
+                pulled_image = client.images.pull(image)
+                auth_used = False
             
             return format_success_response({
                 "image": image,
                 "id": pulled_image.id[:12],
                 "tags": pulled_image.tags,
-                "size": pulled_image.attrs["Size"]
+                "size": pulled_image.attrs["Size"],
+                "authentication_used": auth_used,
+                "registry": registry or "Docker Hub"
             }, "pull_image")
             
         except ValidationError as e:
             return format_error_response(str(e), "pull_image")
+        except NotFound as e:
+            error_msg = f"Image '{image}' not found or access denied"
+            auth_suggestion = ""
+            if use_auth and not auth_config:
+                auth_suggestion = " Consider setting DOCKER_REGISTRY_USERNAME and DOCKER_REGISTRY_PASSWORD environment variables for authentication."
+            elif "pull access denied" in str(e).lower():
+                auth_suggestion = " This may indicate: 1) Docker registry connectivity issues, 2) Authentication required, or 3) Image doesn't exist."
+            
+            return format_error_response(
+                error_msg + auth_suggestion, 
+                "pull_image", 
+                {
+                    "registry_issue": True, 
+                    "image": image,
+                    "auth_configured": bool(auth_config),
+                    "auth_available": settings.has_docker_registry_auth
+                }
+            )
         except DockerException as e:
-            return format_error_response(f"Docker error: {e}", "pull_image")
+            error_msg = f"Docker error: {e}"
+            if "pull access denied" in str(e).lower() or "repository does not exist" in str(e).lower():
+                error_msg += " (Check Docker registry configuration and network connectivity)"
+                if not auth_config and settings.has_docker_registry_auth:
+                    error_msg += " Authentication is available but may not have been used."
+            return format_error_response(error_msg, "pull_image")
         except Exception as e:
             return format_error_response(f"Unexpected error: {e}", "pull_image")
     

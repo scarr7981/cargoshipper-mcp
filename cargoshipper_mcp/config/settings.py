@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     
     # Docker Configuration
     docker_host: Optional[str] = Field(default=None, env="DOCKER_HOST")
+    docker_registry_username: Optional[str] = Field(default=None, env="DOCKER_REGISTRY_USERNAME")
+    docker_registry_password: Optional[str] = Field(default=None, env="DOCKER_REGISTRY_PASSWORD")
+    docker_registry_server: Optional[str] = Field(default=None, env="DOCKER_REGISTRY_SERVER")
+    docker_config_path: Optional[str] = Field(default=None, env="DOCKER_CONFIG_PATH")
     
     # DigitalOcean Configuration
     digitalocean_token: Optional[str] = Field(default=None, env="DIGITALOCEAN_TOKEN")
@@ -65,6 +69,11 @@ class Settings(BaseSettings):
     def has_docker_config(self) -> bool:
         """Check if Docker configuration is available"""
         return True  # Docker client auto-detects configuration
+    
+    @property
+    def has_docker_registry_auth(self) -> bool:
+        """Check if Docker registry authentication is configured"""
+        return bool(self.docker_registry_username and self.docker_registry_password)
     
     @property
     def has_digitalocean_config(self) -> bool:
