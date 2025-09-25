@@ -330,11 +330,51 @@ git push origin v1.0.1
 - Publishes to PyPI automatically
 - Available globally: `uvx cargoshipper-mcp`
 
-#### **Version Numbering**:
-Follow [Semantic Versioning](https://semver.org/):
-- **Major** (1.0.0 → 2.0.0): Breaking changes
-- **Minor** (1.0.0 → 1.1.0): New features, backwards compatible  
-- **Patch** (1.0.0 → 1.0.1): Bug fixes, backwards compatible
+#### **🏷️ Version Numbering & Semantic Versioning**
+
+CargoShipper follows [Semantic Versioning (SemVer)](https://semver.org/) strictly:
+
+**Format**: `MAJOR.MINOR.PATCH` (e.g., `1.2.3`)
+
+**When to increment each component**:
+
+- **🔴 MAJOR** (1.0.0 → 2.0.0): Breaking changes
+  - API endpoint changes that break existing clients
+  - Removing or changing required environment variables
+  - Changing MCP tool signatures or behavior
+  - Dropping support for Python versions
+  - **Examples**: Renaming tools, changing required parameters
+
+- **🟡 MINOR** (1.0.0 → 1.1.0): New features, backwards compatible
+  - Adding new MCP tools or resources
+  - Adding optional configuration parameters
+  - Performance improvements without behavior changes
+  - New API provider integrations (new cloud services)
+  - **Examples**: Adding Kubernetes support, new Docker operations
+
+- **🟢 PATCH** (1.0.0 → 1.0.1): Bug fixes, backwards compatible
+  - Fixing crashes or validation errors
+  - Correcting API response formatting
+  - Security patches that don't change APIs
+  - Documentation fixes
+  - **Examples**: Settings validation fix, error handling improvements
+
+**Current Version Strategy**:
+- **v1.x.x**: Stable MCP interface, production-ready
+- **v0.x.x**: Pre-release, API may change (none released)
+- **Pre-release tags**: `v1.0.1-alpha.1`, `v1.0.1-beta.1`, `v1.0.1-rc.1`
+
+**Version Decision Matrix**:
+```
+Change Type                    → Version Bump
+────────────────────────────────────────────
+Fix startup crashes            → PATCH
+Add CloudFlare zone management → MINOR  
+Change required env vars       → MAJOR
+Improve error messages         → PATCH
+Add AWS integration            → MINOR
+Remove DigitalOcean support    → MAJOR
+```
 
 #### **Emergency Releases**:
 For critical fixes:
