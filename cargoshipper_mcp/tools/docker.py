@@ -170,7 +170,9 @@ def register_tools(mcp, get_client: Callable):
             }, "start_container")
             
         except NotFound:
-            return format_error_response(f"Container {container_id} not found", "start_container")
+            error_msg = f"Container '{container_id}' not found"
+            error_msg += ". This may occur if the container was created with remove=true and has been auto-removed after stopping"
+            return format_error_response(error_msg, "start_container", {"container_not_found": True, "container_id": container_id})
         except DockerException as e:
             return format_error_response(f"Docker error: {e}", "start_container")
         except Exception as e:
@@ -302,8 +304,16 @@ def register_tools(mcp, get_client: Callable):
             
         except ValidationError as e:
             return format_error_response(str(e), "pull_image")
+        except NotFound as e:
+            error_msg = f"Image '{image}' not found or access denied"
+            if "pull access denied" in str(e).lower():
+                error_msg += ". This may indicate: 1) Docker registry connectivity issues, 2) Authentication required, or 3) Image doesn't exist"
+            return format_error_response(error_msg, "pull_image", {"registry_issue": True, "image": image})
         except DockerException as e:
-            return format_error_response(f"Docker error: {e}", "pull_image")
+            error_msg = f"Docker error: {e}"
+            if "pull access denied" in str(e).lower() or "repository does not exist" in str(e).lower():
+                error_msg += " (Check Docker registry configuration and network connectivity)"
+            return format_error_response(error_msg, "pull_image")
         except Exception as e:
             return format_error_response(f"Unexpected error: {e}", "pull_image")
     
