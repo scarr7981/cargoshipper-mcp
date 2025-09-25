@@ -40,10 +40,18 @@ def format_resource_response(content: str, resource_type: str, resource_id: str 
 
 def format_container_info(container) -> Dict[str, Any]:
     """Format Docker container information for consistent output"""
+    # Handle missing or None image gracefully
+    image_name = "<missing>"
+    if container.image:
+        if container.image.tags:
+            image_name = container.image.tags[0]
+        else:
+            image_name = container.image.id[:12]
+    
     return {
         "id": container.id[:12],
         "name": container.name,
-        "image": container.image.tags[0] if container.image.tags else container.image.id[:12],
+        "image": image_name,
         "status": container.status,
         "created": container.attrs["Created"],
         "ports": container.attrs["NetworkSettings"]["Ports"]
