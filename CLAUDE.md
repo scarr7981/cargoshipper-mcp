@@ -245,6 +245,15 @@ mcp__git__git_status         # Check repository status
 mcp__git__git_add           # Stage changes
 mcp__git__git_commit        # Create commits
 
+# Git branch management workflow
+# When working on fixes or features:
+git stash push -m "WIP: Description of changes"  # Stash current work
+git checkout -b fix/branch-name main             # Create feature/fix branch
+git stash pop                                    # Apply stashed changes
+# ... work on changes ...
+git add . && git commit -m "Fix: description"    # Commit changes
+git push -u origin fix/branch-name               # Push branch and create PR
+
 # Memory management (via MCP)
 mcp__memory__create_entities # Document new components
 mcp__memory__search_nodes   # Find relevant information
