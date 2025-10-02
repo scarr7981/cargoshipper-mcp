@@ -12,6 +12,45 @@ CargoShipper is an MCP (Model Context Protocol) server designed to extend Claude
 
 This MCP server acts as a unified gateway, eliminating the need for Claude to handle complex API negotiations and providing straightforward, reproducible interactions with these critical infrastructure technologies.
 
+## ⚠️ **IMPORTANT SAFETY WARNING**
+
+**USE AT YOUR OWN RISK**: This tool gives AI models direct access to infrastructure management APIs that can:
+- Create, modify, or delete cloud resources (potentially incurring costs)
+- Modify DNS settings (potentially breaking domains)  
+- Manage Docker containers and images (potentially affecting running services)
+- Execute destructive operations on your infrastructure
+
+**AI models may:**
+- Misinterpret instructions and perform unintended operations
+- Make mistakes in resource configuration or deletion
+- Execute multiple operations when only one was intended
+- Struggle with complex multi-step procedures requiring human judgment
+
+**Recommended safety measures:**
+- Use dedicated development/testing accounts with spending limits
+- Implement least-privilege API tokens with restricted permissions
+- Monitor all operations through cloud provider dashboards
+- Test operations in isolated environments first
+- Keep backups of critical configurations and data
+
+## 🤖 **VIBECODE FRIENDLY PROJECT**
+
+This project welcomes contributions from AI/LLM agents! **Pull requests from Claude, GPT, and other AI models are actively encouraged.**
+
+**Guidelines for AI contributors:**
+- Follow the existing code patterns and documentation standards
+- Include comprehensive commit messages explaining changes
+- Test your changes thoroughly before submitting PRs
+- Use the MCP tools available in this environment for development and testing
+- Refer to existing code style and architectural decisions
+- Update documentation when adding new features
+
+**For AI agents working on this project:**
+- Use the Memory MCP server to track your development decisions
+- Use the Git MCP server for proper version control workflow  
+- Use Sequential-thinking MCP for complex architectural planning
+- Test integrations using the Playwright MCP server when applicable
+
 ## Available MCP Servers
 
 This development environment has access to the following MCP servers configured in `.mcp.json`:

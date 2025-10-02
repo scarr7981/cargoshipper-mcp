@@ -7,6 +7,44 @@
 
 A comprehensive MCP (Model Context Protocol) server that provides Claude with direct access to Docker, DigitalOcean, and CloudFlare APIs for infrastructure management and automation.
 
+## ⚠️ **IMPORTANT SAFETY WARNING**
+
+**USE AT YOUR OWN RISK**: This tool gives AI models direct access to infrastructure management APIs that can:
+- Create, modify, or delete cloud resources (potentially incurring costs)
+- Modify DNS settings (potentially breaking domains)
+- Manage Docker containers and images (potentially affecting running services)
+- Execute destructive operations on your infrastructure
+
+**Before using:**
+- Ensure you understand the capabilities and risks of each API
+- Start with non-production environments only
+- Review all operations before execution in production
+- Monitor costs and resource usage carefully
+- Have backup and recovery procedures in place
+
+**AI models may:**
+- Misinterpret instructions and perform unintended operations
+- Make mistakes in resource configuration or deletion
+- Execute multiple operations when only one was intended
+- Struggle with complex multi-step procedures requiring human judgment
+
+**Recommended safety measures:**
+- Use dedicated development/testing accounts with spending limits
+- Implement least-privilege API tokens with restricted permissions
+- Monitor all operations through cloud provider dashboards
+- Test operations in isolated environments first
+- Keep backups of critical configurations and data
+
+## 🤖 **VIBECODE FRIENDLY PROJECT**
+
+This project welcomes contributions from AI/LLM agents! **Pull requests from Claude, GPT, and other AI models are actively encouraged.**
+
+**Guidelines for AI contributors:**
+- Follow existing code patterns and documentation standards
+- Include comprehensive commit messages explaining changes
+- Test changes thoroughly before submitting PRs
+- Update documentation when adding new features
+
 ## ✨ Easy Setup with uvx
 
 CargoShipper is available on PyPI and works seamlessly with `uvx` for easy installation and management, just like `mcp-server-git`.
