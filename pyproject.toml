@@ -1,6 +1,6 @@
 [project]
 name = "cargoshipper-mcp"
-version = "1.0.2"
+version = "1.0.3"
 description = "MCP server for Docker, DigitalOcean, and CloudFlare operations"
 authors = [{name = "Simon Carr", email = "simon.carr@gmail.com"}]
 license = {text = "MIT"}
